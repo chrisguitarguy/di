@@ -60,5 +60,5 @@ interface DefinitionInterface
      *
      * @return  \orno\di\definition\definitioninterface
      */
-    public function autowired();
+    public function autowire();
 }

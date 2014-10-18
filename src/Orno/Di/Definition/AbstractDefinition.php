@@ -103,7 +103,7 @@ abstract class AbstractDefinition implements DefinitionInterface
     /**
      * {@inheritdoc}
      */
-    public function autowired()
+    public function autowire()
     {
         $this->autowired = true;
         return $this;

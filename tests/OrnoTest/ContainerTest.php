@@ -49,7 +49,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $c = new Container;
         $c->add('OrnoTest\Assets\BazInterface', 'OrnoTest\Assets\Baz');
         $c->add('service', 'OrnoTest\Assets\Foo')
-            ->autowired();
+            ->autowire();
 
         $foo = $c->get('service');
 
@@ -65,7 +65,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $c->add('OrnoTest\Assets\BazInterface', 'OrnoTest\Assets\Baz');
         $c->add('service', function (Assets\Bar $dep) {
             return new Assets\Foo($dep);
-        })->autowired();
+        })->autowire();
 
         $foo = $c->get('service');
 

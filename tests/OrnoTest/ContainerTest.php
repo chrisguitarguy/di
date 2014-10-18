@@ -13,7 +13,7 @@ use Orno\Di\Definition\Factory;
 /**
  * ContainerTest
  */
-class ContainerTest extends \PHPUnit_Framework_Testcase
+class ContainerTest extends \PHPUnit_Framework_TestCase
 {
     protected $configArray = [
         'OrnoTest\Assets\Foo' => [

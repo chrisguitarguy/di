@@ -12,32 +12,13 @@ use Orno\Di\ContainerInterface;
 /**
  * ClassDefinition
  */
-class ClassDefinition implements DefinitionInterface
+class ClassDefinition extends AbstractDefinition
 {
-    /**
-     * @var \Orno\Di\ContainerInterface
-     */
-    protected $container;
-
-    /**
-     * @var string
-     */
-    protected $alias;
 
     /**
      * @var string
      */
     protected $class;
-
-    /**
-     * @var array
-     */
-    protected $arguments = [];
-
-    /**
-     * @var array
-     */
-    protected $methods = [];
 
     /**
      * Constructor
@@ -48,9 +29,8 @@ class ClassDefinition implements DefinitionInterface
      */
     public function __construct($alias, $concrete, ContainerInterface $container)
     {
-        $this->alias     = $alias;
+        parent::__construct($alias, $container);
         $this->class     = $concrete;
-        $this->container = $container;
     }
 
     /**
@@ -58,81 +38,12 @@ class ClassDefinition implements DefinitionInterface
      */
     public function __invoke(array $args = [])
     {
-        $object = $this->constructorInjection($args);
+        $resolved = $this->resolveArguments($args);
+
+        $reflection = new \ReflectionClass($this->class);
+        $object = $reflection->newInstanceArgs($resolved);
 
         return $this->invokeMethods($object);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function withArgument($arg)
-    {
-        $this->arguments[] = $arg;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function withArguments(array $args)
-    {
-        foreach ($args as $arg) {
-            $this->withArgument($arg);
-        }
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function withMethodCall($method, array $args = [])
-    {
-        $this->methods[] = [
-            'method'    => $method,
-            'arguments' => $args
-        ];
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function withMethodCalls(array $methods = [])
-    {
-        foreach ($methods as $method => $args) {
-            $this->withMethodCall($method, $args);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Instantiate object with dependencies
-     *
-     * @param  array  $args - allow runtime override of stored values with literal values
-     * @return object
-     */
-    protected function constructorInjection(array $args = [])
-    {
-        $reflection = new \ReflectionClass($this->class);
-
-        $args = (empty($args)) ? $this->arguments : $args;
-
-        $resolvedArguments = [];
-
-        foreach ($args as $arg) {
-            if (is_string($arg) && ($this->container->isRegistered($arg) || class_exists($arg))) {
-                $resolvedArguments[] = $this->container->get($arg);
-            } else {
-                $resolvedArguments[] = $arg;
-            }
-        }
-
-        return $reflection->newInstanceArgs($resolvedArguments);
     }
 
     /**

@@ -14,6 +14,8 @@ use Orno\Di\ContainerInterface;
  */
 abstract class AbstractDefinition implements DefinitionInterface
 {
+    use \Orno\Di\ParameterReflectionTrait;
+
     /**
      * @var \Orno\Di\ContainerInterface
      */
@@ -33,6 +35,11 @@ abstract class AbstractDefinition implements DefinitionInterface
      * @var array
      */
     protected $methods = [];
+
+    /**
+     * @var boolean
+     */
+    protected $autowired = false;
 
     /**
      * Constructor
@@ -94,6 +101,15 @@ abstract class AbstractDefinition implements DefinitionInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function autowired()
+    {
+        $this->autowired = true;
+        return $this;
+    }
+
+    /**
      * Resolves all of the arguments.  If you do not send an array of arguments
      * it will use the Definition Arguments.
      *
@@ -102,7 +118,7 @@ abstract class AbstractDefinition implements DefinitionInterface
      */
     protected function resolveArguments($args = [])
     {
-        $args = (empty($args)) ? $this->arguments : $args;
+        $args = (empty($args)) ? $this->findArguments() : $args;
 
         $resolvedArguments = [];
 
@@ -116,4 +132,27 @@ abstract class AbstractDefinition implements DefinitionInterface
 
         return $resolvedArguments;
     }
+
+    /**
+     * Looks up the arguments for the definition. If the definition is autowired
+     * this means using reflection, otherwise, simply return the definition
+     * argument list.
+     *
+     * @return  array A list of argument aliases
+     */
+    protected function findArguments()
+    {
+        if (!$this->autowired) {
+            return $this->arguments;
+        }
+
+        return $this->reflectArguments($this->createReflection());
+    }
+
+    /**
+     * Create the Reflection object for the definition.
+     *
+     * @return  \ReflectionFunctionAbstract
+     */
+    abstract protected function createReflection();
 }

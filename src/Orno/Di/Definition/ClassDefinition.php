@@ -68,4 +68,13 @@ class ClassDefinition extends AbstractDefinition
 
         return $object;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createReflection()
+    {
+        $ref = new \ReflectionClass($this->class);
+        return $ref->getConstructor();
+    }
 }

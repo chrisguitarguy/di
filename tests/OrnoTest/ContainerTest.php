@@ -44,6 +44,37 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('OrnoTest\Assets\BazInterface', $foo->bar->baz);
     }
 
+    public function testAutowiredClassDefinitionResolvesNestedDependencies()
+    {
+        $c = new Container;
+        $c->add('OrnoTest\Assets\BazInterface', 'OrnoTest\Assets\Baz');
+        $c->add('service', 'OrnoTest\Assets\Foo')
+            ->autowired();
+
+        $foo = $c->get('service');
+
+        $this->assertInstanceOf('OrnoTest\Assets\Foo', $foo);
+        $this->assertInstanceOf('OrnoTest\Assets\Bar', $foo->bar);
+        $this->assertInstanceOf('OrnoTest\Assets\Baz', $foo->bar->baz);
+        $this->assertInstanceOf('OrnoTest\Assets\BazInterface', $foo->bar->baz);
+    }
+
+    public function testAutowiredClosureDefinitionResolvesNestedDepenencies()
+    {
+        $c = new Container;
+        $c->add('OrnoTest\Assets\BazInterface', 'OrnoTest\Assets\Baz');
+        $c->add('service', function (Assets\Bar $dep) {
+            return new Assets\Foo($dep);
+        })->autowired();
+
+        $foo = $c->get('service');
+
+        $this->assertInstanceOf('OrnoTest\Assets\Foo', $foo);
+        $this->assertInstanceOf('OrnoTest\Assets\Bar', $foo->bar);
+        $this->assertInstanceOf('OrnoTest\Assets\Baz', $foo->bar->baz);
+        $this->assertInstanceOf('OrnoTest\Assets\BazInterface', $foo->bar->baz);
+    }
+
     public function testInjectsArgumentsAndInvokesMethods()
     {
         $c = new Container;

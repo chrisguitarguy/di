@@ -60,4 +60,12 @@ class ClosureDefinition extends AbstractDefinition
             sprintf('Cannot bind method calls to a Closure aliased as [%s]', $this->alias)
         );
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createReflection()
+    {
+        return new \ReflectionFunction($this->closure);
+    }
 }

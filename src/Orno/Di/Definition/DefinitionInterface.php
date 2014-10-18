@@ -52,4 +52,13 @@ interface DefinitionInterface
      * @return \Orno\Di\Definition\DefinitionInterface
      */
     public function withMethodCalls(array $methods = []);
+
+    /**
+     * mark a definition as being autowired. if no arguments are passed into the
+     * container `get` call, reflection will be used to look up arguments for
+     * the concrete class.
+     *
+     * @return  \orno\di\definition\definitioninterface
+     */
+    public function autowired();
 }

@@ -17,6 +17,8 @@ use Orno\Di\Definition\ClassDefinition;
  */
 class Container implements ContainerInterface, \ArrayAccess
 {
+    use ParameterReflectionTrait;
+
     /**
      * @var \Orno\Di\Definition\Factory
      */
@@ -294,26 +296,7 @@ class Container implements ContainerInterface, \ArrayAccess
             return $definition;
         }
 
-        // loop through dependencies and get aliases/values
-        foreach ($constructor->getParameters() as $param) {
-            $dependency = $param->getClass();
-
-            // if the dependency is not a class we attempt to get a dafult value
-            if (is_null($dependency)) {
-                if ($param->isDefaultValueAvailable()) {
-                    $definition->withArgument($param->getDefaultValue());
-                    continue;
-                }
-
-                throw new Exception\UnresolvableDependencyException(
-                    sprintf('Unable to resolve a non-class dependency of [%s] for [%s]', $param, $class)
-                );
-            }
-
-            // if the dependency is a class, just register it's name as an
-            // argument with the definition
-            $definition->withArgument($dependency->getName());
-        }
+        $definition->withArguments($this->reflectArguments($constructor));
 
         return $definition;
     }

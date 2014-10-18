@@ -63,6 +63,7 @@ abstract class AbstractDefinition implements DefinitionInterface
      */
     public function withArgument($arg)
     {
+        $this->autowired = false;
         $this->arguments[] = $arg;
 
         return $this;

@@ -211,6 +211,16 @@ $container = new \Orno\Di\Container;
 $foo = $container->get('Foo');
 ```
 
+Existing definitions can also automatically resolve dependencies.
+
+```php
+$container = new \Orno\Di\Container;
+$container=>add('Foo', 'Foo')
+    ->autowire();
+
+$foo = $container->get('Foo');
+```
+
 ### Caching
 
 By injecting [Orno\Cache](https://github.com/orno/cache) in to the container, it will cache any reflection based resolution for you meaning that there is less bootstrap/config in your development time.

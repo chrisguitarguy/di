@@ -42,6 +42,11 @@ abstract class AbstractDefinition implements DefinitionInterface
     protected $autowired = false;
 
     /**
+     * @var array
+     */
+    protected $autowiredArguments = null;
+
+    /**
      * Constructor
      *
      * @param string                      $alias
@@ -146,7 +151,11 @@ abstract class AbstractDefinition implements DefinitionInterface
             return $this->arguments;
         }
 
-        return $this->reflectArguments($this->createReflection());
+        if (null === $this->autowiredArguments) {
+            $this->autowiredArguments = $this->reflectArguments($this->createReflection());
+        }
+
+        return $this->autowiredArguments;
     }
 
     /**
